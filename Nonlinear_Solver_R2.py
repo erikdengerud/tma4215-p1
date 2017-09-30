@@ -39,12 +39,10 @@ def Multvariate_Newton(x, y):
 		F_value = F(vec[0], vec[1])
 		F_norm = np.linalg.norm(F_value, ord=np.inf)
 		itcount+=1
-		print('Iteration ', itcount, '\t xk1=',vec, '\t xk1-xk=%0.2E' % F_norm)
+		print('Iteration ', itcount, '\t xk1=',vec, '\t F_norm=%0.2E' % F_norm)
 
 	if abs(F_norm) > tol:
 		itcount = -1 #Does not converge within 100 iterations
 	return vec, itcount
-
-#np.set_printoptions(precision=3)#easier to read
 
 Multvariate_Newton(x,y)
