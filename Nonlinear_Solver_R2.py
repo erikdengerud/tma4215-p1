@@ -24,7 +24,7 @@ tol = 1e-14
 F = lambda x,y: np.array([x**4+x-y**3-1, x**2+x*y+y-2])
 
 #Defining the jacobi matrix of the system
-J = lambda x,y: np.matrix([[3*x**3+1, -3*y**2], [2*x+y, x+1]])
+J = lambda x,y: np.matrix([[4*x**3+1, -3*y**2], [2*x+y, x+1]])
 
 
 def Multvariate_Newton(x, y):
