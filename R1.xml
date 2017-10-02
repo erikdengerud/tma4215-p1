@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DATA>
+	<Method>'Newton'</Method>
+	<Function>'x**2'</Function>
+	<Derivative_1>'2*x'</Derivative_1>
+	<Derivative_2>'2'</Derivative_2>
+	<Derivative_3>'0'</Derivative_3>
+	<Derivative_4>'0'</Derivative_4>
+	<Convergence>True</Convergence>
+	<Guess>0.5</Guess>
+	<xlim_1>0</xlim_1>
+	<xlim_2>10</xlim_2>
+</DATA>

@@ -7,6 +7,36 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 ################################################################################
 
+#tolerance
+tol = 1e-14
+#XMLFILE
+XMLFILE = 'R1.xml'#name of xml-file
+
+def XML_Extraction(XMLFILE):
+    tree = et.parse(XMLFILE)
+    root = tree.getroot()
+    method = root[0].text
+    f = eval(str(root[1].text))
+    x=3
+    print(eval(f))
+    function = lambda x : f
+    function2 = lambda x : x**2
+    d_1 = lambda x : eval(root[2].text)
+    d_2 = lambda x : eval(root[3].text)
+    d_3 = lambda x : eval(root[4].text)
+    d_4 = lambda x : eval(root[5].text)
+    convergence = bool(root[6].text)
+    guess = float(root[7].text)
+    xlim_1 = int(root[8].text)
+    xlim_2 = int(root[9].text)
+
+    return function, function2#, d_1, d_2, d_3, d_4, convergence, guess, xlim_1, xlim_2
+
+print(XML_Extraction(XMLFILE))
+function, function2 = XML_Extraction(XMLFILE)
+print(function(3))
+print(function2(3))
+
 def Olver(f,df,d2f,x0,errTol): #define the original Olver method
     x = [x0]        #initialize x
     
@@ -50,26 +80,32 @@ def Plot_Convergence(err,fname): #plot the convergence of the method used, given
         y[2][k] = err[k+1]/(err[k]**3)
     k = np.arange(0,len(y[1]),1)
     
-    plt.suptitle('f(x) = ' + fname)
-    plt.subplot(131)
-    plt.semilogy(k,y[0])
-    plt.xticks(np.arange(len(k)))
-    plt.ylabel('e_k+1/e_k')
-    plt.xlabel('k')
+    fig = plt.figure()
+    fig.suptitle('$f(x) = $' + '${}$'.format(fname))
+    ax = plt.subplot(131)
+    ax.semilogy(k,y[0])
+    #ax.xticks(np.arange(len(k)))
+    #ax.ylabel('$e_k+1/e_k$')
+    #ax.xlabel('$k$')
+    ax.set_title('$e_k+1/e_k$')
+    #plt.legend()
 
     
-    plt.subplot(132)
-    plt.semilogy(k,y[1])
-    plt.xticks(np.arange(len(k)))
-    plt.xlabel('k')
-    plt.ylabel('e_k+1/e_k^2')
+    ax = plt.subplot(132)
+    ax.semilogy(k,y[1])
+    #plt.xticks(np.arange(len(k)))
+    #plt.xlabel('$k$')
+    #plt.ylabel('$e_k+1/e_k^2$')
+    #plt.legend()
+    ax.set_title('$e_k+1/e_k^2$')
     
-    plt.subplot(133)
-    plt.semilogy(k,y[2],label = 'e_k+1/e_k^3')
-    plt.xticks(np.arange(len(k)))
-    plt.xlabel('k')
-    plt.ylabel('e_k+1/e_k^3')
-    
+    ax = plt.subplot(133)
+    ax.semilogy(k,y[2])
+    #plt.xticks(np.arange(len(k)))
+    #plt.xlabel('$k$')
+    #plt.ylabel('$e_k+1/e_k^3$')
+    ax.set_title('$e_k+1/e_k^3$')
+
     plt.show()
 
         
@@ -94,23 +130,9 @@ def main():
     err = Improved_Olver(f,df,d2f,d3f,d4f,0.39,1e-14)
     
     #Plot_Function(h,'e^(2x)-6*e^(x)+8',-1,1)
-    Plot_Convergence(err[1],'x^2*e^(-x^2)')
+    #Plot_Convergence(err[1],'x^2*e^(-x^2)')
     
 
 if __name__ == "__main__":
     main()
         
-
-
-# F = lambda x,y,z: np.array([3*x**2-y**2+z**2-1, y**4+3*z-1.5, x+y+4*z**2-2])
-# 
-# J = lambda x,y,z: np.matrix([[6*x, 2*y, 2*z], [0, 4*y**3, 3], [1, 1, 8*z]])
-# 
-# 
-# print(F(1,1,1))
-# 
-# print('\n', J(1,1,1))
-# 
-# print('\n', np.linalg.det(J(1,1,1)))
-# def Nonlinear_Solver_R3():
-# 	return 0
