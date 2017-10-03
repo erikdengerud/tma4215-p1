@@ -7,14 +7,49 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 ################################################################################
 
+ERRORTOL = 1e-14
+ITERATIONCAP = 1000
+EPS = 1e-20
 
-def Newton(f,df,x0,errTol):
-    print('WUBBA LUBBA DUB DUUUUB!')
-    return 0
+TITLESIZE = 18
+LABELSIZE = 14
+plt.style.use('ggplot')
+
+def Newton(f, df, x0):
+    x = x0
+    xvalues = [x]
+    err = []
+    for i in range (ITERATIONCAP):
+        df_x = df(x)
+        assert(np.abs(df_x) > EPS)
+        x = x - f(x) / df(x)
+        current_error = np.abs(xvalues[-1] - x)
+        xvalues.append(x)
+        err.append(current_error)
+        if (current_error < ERRORTOL):
+            break
+    assert(err[-1] < ERRORTOL)
+    return x, err
     
-def Improved_Newton(f,df,d2f,x0,errTol):
-    print('\'Tis but a scratch')
-    return 0
+def Improved_Newton (f, df, ddf, x0):
+    x = x0
+    xvalues = [x]
+    err = []
+    for i in range (ITERATIONCAP):
+        f_x = f(x)
+        df_x = df(x)
+        assert(np.abs(df_x) > EPS)
+        ddf_x = ddf(x)
+        denominator = df_x * (1 - f_x * ddf_x / df_x**2)
+        assert(np.abs(denominator) > EPS)
+        x = x - f_x / denominator
+        current_error = np.abs(xvalues[-1] - 1)
+        xvalues.append(x)
+        err.append(current_error)
+        if (current_error < ERRORTOL):
+            break
+    assert(err[-1] < ERRORTOL)
+    return x, err
 
 ################################################################################
 #define the original Olver method
