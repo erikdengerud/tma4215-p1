@@ -83,21 +83,18 @@ def Plot_Convergence(err,fname,methodname):
     plt.suptitle('f(x) = ' + fname + '\n' + methodname)
     
     plt.subplot(131)
-    plt.semilogy(k,y[0])
-    plt.xticks(np.arange(len(k)))
+    plt.plot(k,y[0])
     plt.xlabel('k')
     plt.ylabel('e_k+1/e_k')
  
 
     plt.subplot(132)
     plt.semilogy(k,y[1])
-    plt.xticks(np.arange(len(k)))
     plt.xlabel('k')
     plt.ylabel('e_k+1/e_k^2')
     
     plt.subplot(133)
     plt.semilogy(k,y[2],label = 'e_k+1/e_k^3')
-    plt.xticks(np.arange(len(k)))
     plt.xlabel('k')
     plt.ylabel('e_k+1/e_k^3')
     
