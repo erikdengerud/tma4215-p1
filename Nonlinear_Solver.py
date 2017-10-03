@@ -113,7 +113,7 @@ def XML_Extraction(filename):
     return [method,fname,f,df,d2f,d3f,d4f,errTol,x0,a,b]
     
 def main():
-    data = XML_Extraction('C:/Users/omgwt/Documents/GitHub/tma4215-p1/Nonlinear_Solver.xml')
+    data = XML_Extraction('Nonlinear_Solver.xml')
     
     method =    data[0]
     fname =     data[1]
@@ -127,6 +127,8 @@ def main():
     a =         data[9]
     b =         data[10]  
     
+    
+    
     # errNetwon =     Newton(f,df,x0,errTol)
     # errImpNewton =  Improved_Newton(f,df,d2f,x0,errTol)
     errOlver =      Olver(f,df,d2f,x0,errTol)
@@ -134,7 +136,6 @@ def main():
     
     Plot_Convergence(errOlver[1],fname,'Olver\'s Method')
     Plot_Convergence(errImpOlver[1],fname,'Improved Olver\'s Method')
-    
     Plot_Function(f,fname,a,b)
     
 
