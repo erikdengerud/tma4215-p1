@@ -8,6 +8,14 @@ import matplotlib.pyplot as plt
 ################################################################################
 
 
+def Newton(f,df,x0,errTol):
+    print('WUBBA LUBBA DUB DUUUUB!')
+    return 0
+    
+def Improved_Newton(f,df,d2f,x0,errTol):
+    print('\'Tis but a scratch')
+    return 0
+
 ################################################################################
 #define the original Olver method
 def Olver(f,df,d2f,x0,errTol):
@@ -42,8 +50,7 @@ def Improved_Olver(f,df,d2f,d3f,d4f,x0,errTol):
     
     g   = lambda x: f(x)/df(x) + d2f(x)*f(x)**2/(2*df(x)**3)
     dg  = lambda x: 1  +  d3f(x)*f(x)**2/(2*df(x)**3)  -  3*d2f(x)**2*f(x)**2/(2*df(x)**4)
-    d2g = lambda x: (d4f(x)*f(x)**2/(2*df(x)**3)  +  d3f(x)*f(x)/df(x)**2  - 9*d3f(x)*f(x)**2*d2f(x)/(2*df(x)**4) 
-                    - 3*d2f(x)**2*f(x)/df(x)**3  + 6*d2f(x)**3*f(x)**2/df(x)**5)
+    d2g = lambda x: (d4f(x)*f(x)**2/(2*df(x)**3)  +  d3f(x)*f(x)/df(x)**2  - 9*d3f(x)*f(x)**2*d2f(x)/(2*df(x)**4) - 3*d2f(x)**2*f(x)/df(x)**3  + 6*d2f(x)**3*f(x)**2/df(x)**5)
     return Olver(g,dg,d2g,x0,errTol)
 ################################################################################
 
@@ -53,6 +60,7 @@ def Improved_Olver(f,df,d2f,d3f,d4f,x0,errTol):
 def Plot_Function(f,fname,a,b):
     x = np.arange(a,b,abs(b-a)/10000)
     y = f(x)
+    plt.figure()
     plt.plot(x,y,label = 'f(x) = ' + fname)
     plt.show()
     plt.xlabel('x')
@@ -71,14 +79,16 @@ def Plot_Convergence(err,fname,methodname):
         y[2][k] = err[k+1]/(err[k]**3)
     k = np.arange(0,len(y[1]),1)
     
+    plt.figure()
     plt.suptitle('f(x) = ' + fname + '\n' + methodname)
+    
     plt.subplot(131)
     plt.semilogy(k,y[0])
     plt.xticks(np.arange(len(k)))
-    plt.ylabel('e_k+1/e_k')
     plt.xlabel('k')
+    plt.ylabel('e_k+1/e_k')
+ 
 
-    
     plt.subplot(132)
     plt.semilogy(k,y[1])
     plt.xticks(np.arange(len(k)))
@@ -113,6 +123,7 @@ def XML_Extraction(filename):
     return [method,fname,f,df,d2f,d3f,d4f,errTol,x0,a,b]
     
 def main():
+    
     data = XML_Extraction('Nonlinear_Solver.xml')
     
     method =    data[0]
@@ -127,16 +138,34 @@ def main():
     a =         data[9]
     b =         data[10]  
     
-    
-    
-    # errNetwon =     Newton(f,df,x0,errTol)
-    # errImpNewton =  Improved_Newton(f,df,d2f,x0,errTol)
-    errOlver =      Olver(f,df,d2f,x0,errTol)
-    errImpOlver =   Improved_Olver(f,df,d2f,d3f,d4f,x0,errTol)
-    
-    Plot_Convergence(errOlver[1],fname,'Olver\'s Method')
-    Plot_Convergence(errImpOlver[1],fname,'Improved Olver\'s Method')
+    plt.close('all')
     Plot_Function(f,fname,a,b)
+    
+    switch = method
+    if  switch == 'olver':
+        errOlver =      Olver(f,df,d2f,x0,errTol)
+        Plot_Convergence(errOlver[1],fname,'Olver\'s Method')
+    elif switch == 'improved_olver':
+        errImpOlver =   Improved_Olver(f,df,d2f,d3f,d4f,x0,errTol)
+        Plot_Convergence(errImpOlver[1],fname,'Improved Olver\'s Method')
+    elif switch == 'newton':
+        errNetwon =     Newton(f,df,x0,errTol)
+        #Plot_Convergence(errNewton[1],fname,'Newton\'s method')
+    elif switch == 'improved_newton':
+        errImpNewton =  Improved_Newton(f,df,x0,errTol)
+        #Plot_Convergence(errImpNewton[1],fname,'Improved Newton\'s method')
+    elif switch == 'all':
+        errOlver =      Olver(f,df,d2f,x0,errTol)
+        errImpOlver =   Improved_Olver(f,df,d2f,d3f,d4f,x0,errTol)
+        errNetwon =     Newton(f,df,x0,errTol)
+        errImpNewton =  Improved_Newton(f,df,d2f,x0,errTol)
+        Plot_Convergence(errOlver[1],fname,'Olver\'s Method')
+        Plot_Convergence(errImpOlver[1],fname,'Improved Olver\'s Method')
+        #Plot_Convergence(errNewton[1],fname,'Newton\'s method')
+        #Plot_Convergence(errImpNewton[1],fname,'Improved Newton\'s method')
+    else:
+        print('Exiting program emptyhanded - please input a correct method, either\n "olver", "improved_olver", "newton", "improved_newton" or "all"\n')
+
     
 
 if __name__ == "__main__":
