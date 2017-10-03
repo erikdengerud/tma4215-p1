@@ -104,6 +104,8 @@ def Plot_Convergence(err,fname,methodname):
     plt.show()
 ################################################################################
         
+        
+################################################################################        
 def XML_Extraction(filename):    
     XMLFILE = filename          #name of xml-file
     tree = et.parse(XMLFILE)
@@ -121,7 +123,10 @@ def XML_Extraction(filename):
     b =         float(root[9].text)
 
     return [method,fname,f,df,d2f,d3f,d4f,errTol,x0,a,b]
+################################################################################
     
+
+################################################################################    
 def main():
     
     data = XML_Extraction('Nonlinear_Solver.xml')
@@ -165,8 +170,7 @@ def main():
         #Plot_Convergence(errImpNewton[1],fname,'Improved Newton\'s method')
     else:
         print('Exiting program emptyhanded - please input a correct method, either\n "olver", "improved_olver", "newton", "improved_newton" or "all"\n')
-
-    
+################################################################################    
 
 if __name__ == "__main__":
     main()
