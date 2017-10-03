@@ -7,13 +7,16 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 ################################################################################
 
-def Olver(f,df,d2f,x0,errTol): #define the original Olver method
+
+################################################################################
+#define the original Olver method
+def Olver(f,df,d2f,x0,errTol):
     x = [x0]        #initialize x
     
     i = 0           # number of iterations
     temp = x0 - f(x0)/df(x0) - d2f(x0)*f(x0)**2/(2*df(x0)**3)
     
-    while (abs(x[-1]-temp) > errTol) & (i < 1000):
+    while (abs(x[-1]-temp) > errTol) & (i < 1001):
         x.append(temp)
         temp = x[-1] - f(x[-1])/df(x[-1]) - d2f(x[-1])*f(x[-1])**2/(2*df(x[-1])**3)
         i += 1
@@ -22,18 +25,32 @@ def Olver(f,df,d2f,x0,errTol): #define the original Olver method
     for k in (range(0,len(err))):
         err[k] = abs(x[k]-x[k+1])
     
-    result = 'The root is ' + repr(x[-1]) + ', \nwith i = ' + repr(i) + '# of iterations.\nThe errors e_k = |x_k - x_k+1| are as follows, with k = {1, ... ,i}:\n'  +   repr(err) +'\n'
+    if (i == 1000):
+        result = 'The method failed, and reached the maximum amount of iterations.\n'
+    else:
+        result = ('The root is ' + repr(x[-1]) + ', \nwith i = ' + repr(i) + '# of iterations.\nThe errors e_k = |x_k - x_k+1| are as follows, with k = {1, ... ,i}:\n'  + 
+        repr(err) +'\n')
+        
     print(result)
     return [x[-1],err,len(err)]
+################################################################################
     
-def Improved_Olver(f,df,d2f,d3f,d4f,x0,errTol): #define the Improved Olver method by definition of the original algorithm
+    
+################################################################################
+#define the Improved Olver method by definition of the original algorithm
+def Improved_Olver(f,df,d2f,d3f,d4f,x0,errTol): 
     
     g   = lambda x: f(x)/df(x) + d2f(x)*f(x)**2/(2*df(x)**3)
     dg  = lambda x: 1  +  d3f(x)*f(x)**2/(2*df(x)**3)  -  3*d2f(x)**2*f(x)**2/(2*df(x)**4)
-    d2g = lambda x: d4f(x)*f(x)**2/(2*df(x)**3)  +  d3f(x)*f(x)/df(x)**2  - 9*d3f(x)*f(x)**2*d2f(x)/(2*df(x)**4) - 3*d2f(x)**2*f(x)/df(x)**3  + 6*d2f(x)**3*f(x)**2/df(x)**5
+    d2g = lambda x: (d4f(x)*f(x)**2/(2*df(x)**3)  +  d3f(x)*f(x)/df(x)**2  - 9*d3f(x)*f(x)**2*d2f(x)/(2*df(x)**4) 
+                    - 3*d2f(x)**2*f(x)/df(x)**3  + 6*d2f(x)**3*f(x)**2/df(x)**5)
     return Olver(g,dg,d2g,x0,errTol)
+################################################################################
+
     
-def Plot_Function(f,fname,a,b): #plot any function, given its function handle, on interval [a,b]. fname is the string containing its closed form.
+################################################################################
+#plot any function, given its function handle, on interval [a,b]. fname is the string containing its closed form.
+def Plot_Function(f,fname,a,b):
     x = np.arange(a,b,abs(b-a)/10000)
     y = f(x)
     plt.plot(x,y,label = 'f(x) = ' + fname)
@@ -41,8 +58,12 @@ def Plot_Function(f,fname,a,b): #plot any function, given its function handle, o
     plt.xlabel('x')
     plt.ylabel('f(x)')
     plt.legend()
-    
-def Plot_Convergence(err,fname): #plot the convergence of the method used, given the error array (e_k)_k with element e_k = |x_k - x_k+1|.
+################################################################################
+
+
+################################################################################  
+#plot the convergence of the method used, given the error array (e_k)_k with element e_k = |x_k - x_k+1|.  here, (fname) is the closed form of the function, while methodname is the name of the method used, both as a string.
+def Plot_Convergence(err,fname,methodname): 
     y = np.zeros((3,len(err)-1))
     for k in range(0,len(y[1])):
         y[0][k] = err[k+1]/(err[k])
@@ -50,7 +71,7 @@ def Plot_Convergence(err,fname): #plot the convergence of the method used, given
         y[2][k] = err[k+1]/(err[k]**3)
     k = np.arange(0,len(y[1]),1)
     
-    plt.suptitle('f(x) = ' + fname)
+    plt.suptitle('f(x) = ' + fname + '\n' + methodname)
     plt.subplot(131)
     plt.semilogy(k,y[0])
     plt.xticks(np.arange(len(k)))
@@ -71,30 +92,50 @@ def Plot_Convergence(err,fname): #plot the convergence of the method used, given
     plt.ylabel('e_k+1/e_k^3')
     
     plt.show()
-
+################################################################################
         
-    
-    
+def XML_Extraction(filename):    
+    XMLFILE = filename          #name of xml-file
+    tree = et.parse(XMLFILE)
+    root = tree.getroot()
+    method =    root[0].text
+    fname =     root[1].text
+    f   =       lambda x: eval(root[1].text)
+    df  =       lambda x: eval(root[2].text)
+    d2f =       lambda x: eval(root[3].text)
+    d3f =       lambda x: eval(root[4].text)
+    d4f =       lambda x: eval(root[5].text)
+    errTol =    float(root[6].text) 
+    x0  =       float(root[7].text)
+    a =         float(root[8].text)
+    b =         float(root[9].text)
+
+    return [method,fname,f,df,d2f,d3f,d4f,errTol,x0,a,b]
     
 def main():
-    f =     lambda x:  x**2*np.exp(-x**2)
-    df =    lambda x: -2*np.exp(-x**2)*x*(x**2-1)
-    d2f =   lambda x:  2*np.exp(-x**2)*(2*x**4-5*x**2+1)
-    d3f =   lambda x: -4*np.exp(-x**2)*x*(2*x**4-9*x**2+6)
-    d4f =   lambda x:  4*np.exp(-x**2)*(4*x**6-28*x**4+39*x**2-6)
+    data = XML_Extraction('C:/Users/omgwt/Documents/GitHub/tma4215-p1/Nonlinear_Solver.xml')
     
-
+    method =    data[0]
+    fname =     data[1]
+    f =         data[2]
+    df =        data[3] 
+    d2f =       data[4]  
+    d3f =       data[5] 
+    d4f =       data[6]
+    errTol =    data[7]
+    x0 =        data[8]
+    a =         data[9]
+    b =         data[10]  
     
-    h =     lambda x: np.exp(2*x)-6*np.exp(x)+8
-    dh =    lambda x: 2*np.exp(x)*(1*np.exp(x)-3)
-    d2h =   lambda x: 2*np.exp(x)*(2*np.exp(x)-3)
-    d3h =   lambda x: 2*np.exp(x)*(4*np.exp(x)-3)
-    d4h =   lambda x: 2*np.exp(x)*(8*np.exp(x)-3)
+    # errNetwon =     Newton(f,df,x0,errTol)
+    # errImpNewton =  Improved_Newton(f,df,d2f,x0,errTol)
+    errOlver =      Olver(f,df,d2f,x0,errTol)
+    errImpOlver =   Improved_Olver(f,df,d2f,d3f,d4f,x0,errTol)
     
-    err = Improved_Olver(f,df,d2f,d3f,d4f,0.39,1e-14)
+    Plot_Convergence(errOlver[1],fname,'Olver\'s Method')
+    Plot_Convergence(errImpOlver[1],fname,'Improved Olver\'s Method')
     
-    #Plot_Function(h,'e^(2x)-6*e^(x)+8',-1,1)
-    Plot_Convergence(err[1],'x^2*e^(-x^2)')
+    Plot_Function(f,fname,a,b)
     
 
 if __name__ == "__main__":
