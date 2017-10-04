@@ -102,6 +102,8 @@ def Plot_Function(f,fname,a,b):
     plt.xlabel('x')
     plt.ylabel('f(x)')
     plt.legend()
+    #mpl.rcParams.update({'font.size': 15})
+
 
 
 
@@ -121,21 +123,35 @@ def Plot_Convergence(err,fname,methodname):
     plt.plot(k,y[0])
     plt.xlabel('k')
     plt.ylabel('e_k+1/e_k')
- 
+    xTicks = plt.xticks()
+    plt.xticks(adjustXticks(xTicks[0],k[-1]))
+    plt.legend()
 
     plt.subplot(132)
     plt.semilogy(k,y[1])
     plt.xlabel('k')
     plt.ylabel('e_k+1/e_k^2')
+    xTicks = plt.xticks()
+    plt.xticks(adjustXticks(xTicks[0],k[-1]))
     
     plt.subplot(133)
     plt.semilogy(k,y[2],label = 'e_k+1/e_k^3')
     plt.xlabel('k')
     plt.ylabel('e_k+1/e_k^3')
+    xTicks = plt.xticks()
+    plt.xticks(adjustXticks(xTicks[0],k[-1]))
     
     plt.show()
-
-        
+    
+#adjust the k-values so that they're properly adjusted for the figures.
+def adjustXticks(xTicksArr,kMax):
+    if len(xTicksArr) > 1:
+        if abs(xTicksArr[0]-xTicksArr[1]) <= 1:
+            xTicksArr = np.arange(0, max(xTicksArr), 1.0)
+    if xTicksArr[0] < 0:
+        xTicksArr = xTicksArr[1:]
+    xTicksArr[-1] = kMax
+    return xTicksArr
         
 #extract from XML file.
 def XML_Extraction(filename):    
