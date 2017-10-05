@@ -1,8 +1,8 @@
 ################################################################################
 import xml.etree.ElementTree as et
 import sys
-from math import*
-import numpy as np
+#from math import*
+from numpy import *
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 ################################################################################
@@ -17,7 +17,7 @@ def Newton(f, df, x0,errTol):
     for i in range (iterationcap):
         df_x = df(x)
         x = x - f(x) / df(x)
-        current_error = np.abs(xvalues[-1] - x)
+        current_error = abs(xvalues[-1] - x)
         xvalues.append(x)
         err.append(current_error)
         if (current_error < errTol):
@@ -42,7 +42,7 @@ def Improved_Newton (f, df, ddf, x0,errTol):
         ddf_x = ddf(x)
         denominator = (1 - f_x * ddf_x / df_x**2)
         x = x - (f_x) / ((df_x) * denominator)
-        current_error = np.abs(xvalues[-1] - x)
+        current_error = abs(xvalues[-1] - x)
         xvalues.append(x)
         err.append(current_error)
         if (current_error < errTol):
@@ -94,10 +94,11 @@ def Improved_Olver(f,df,d2f,d3f,d4f,x0,errTol):
 
 #plot any function, given its function handle, on interval [a,b]. fname is the string containing its closed form.
 def Plot_Function(f,fname,a,b):
-    x = np.arange(a,b,abs(b-a)/10000)
+    x = arange(a,b,abs(b-a)/10000)
     y = f(x)
     plt.figure()
-    plt.plot(x,y,label = 'f(x) = ' + fname)
+    
+    plt.plot(x,y,label = r'$f(x) = {}$'.format(fname))
     plt.show()
     plt.xlabel('x')
     plt.ylabel('f(x)')
@@ -109,37 +110,47 @@ def Plot_Function(f,fname,a,b):
 
 #plot the convergence of the method used, given the error array (e_k)_k with element e_k = |x_k - x_k+1|.  here, (fname) is the closed form of the function, while methodname is the name of the method used, both as a string.
 def Plot_Convergence(err,fname,methodname): 
-    y = np.zeros((3,len(err)-1))
+    y = zeros((3,len(err)-1))
     for k in range(0,len(y[1])):
         y[0][k] = err[k+1]/(err[k])
         y[1][k] = err[k+1]/(err[k]**2)
         y[2][k] = err[k+1]/(err[k]**3)
-    k = np.arange(0,len(y[1]),1)
+    k = arange(0,len(y[1]),1)
     
     plt.figure()
-    plt.suptitle('f(x) = ' + fname + '\n' + methodname)
+    plt.suptitle(r'$f(x) = {}$'.format(fname) + '\n' + methodname)
     
     plt.subplot(131)
     plt.plot(k,y[0])
-    plt.xlabel('k')
-    plt.ylabel('e_k+1/e_k')
+    plt.xlabel(r'$k$')
+    plt.ylabel(r'$e_{k+1}/e_k$')
     xTicks = plt.xticks()
     plt.xticks(adjustXticks(xTicks[0],k[-1]))
-    plt.legend()
 
     plt.subplot(132)
     plt.semilogy(k,y[1])
-    plt.xlabel('k')
-    plt.ylabel('e_k+1/e_k^2')
+    plt.xlabel(r'$k$')
+    plt.ylabel(r'$e_{k+1}/e_k^2$')
     xTicks = plt.xticks()
     plt.xticks(adjustXticks(xTicks[0],k[-1]))
     
     plt.subplot(133)
-    plt.semilogy(k,y[2],label = 'e_k+1/e_k^3')
-    plt.xlabel('k')
-    plt.ylabel('e_k+1/e_k^3')
+    plt.semilogy(k,y[2])
+    plt.xlabel(r'$k$')
+    plt.ylabel(r'$e_{k+1}/e_k^3$')
     xTicks = plt.xticks()
     plt.xticks(adjustXticks(xTicks[0],k[-1]))
+    
+    left  = 0.125  # the left side of the subplots of the figure
+    right = 0.9    # the right side of the subplots of the figure
+    bottom = 0.1   # the bottom of the subplots of the figure
+    top = 0.9      # the top of the subplots of the figure
+    wspace = 0.5   # the amount of width reserved for blank space between subplots
+    hspace = 0.3   # the amount of height reserved for white space between subplots
+    
+    plt.subplots_adjust(left, bottom,right, top, wspace, hspace)
+    
+   
     
     plt.show()
     
@@ -147,11 +158,14 @@ def Plot_Convergence(err,fname,methodname):
 def adjustXticks(xTicksArr,kMax):
     if len(xTicksArr) > 1:
         if abs(xTicksArr[0]-xTicksArr[1]) <= 1:
-            xTicksArr = np.arange(0, max(xTicksArr), 1.0)
+            xTicksArr = arange(0, max(xTicksArr), 1.0)
     if xTicksArr[0] < 0:
         xTicksArr = xTicksArr[1:]
     xTicksArr[-1] = kMax
     return xTicksArr
+
+
+
         
 #extract from XML file.
 def XML_Extraction(filename):    
@@ -159,7 +173,11 @@ def XML_Extraction(filename):
     tree = et.parse(XMLFILE)
     root = tree.getroot()
     method =    root[0].text
+    
     fname =     root[1].text
+    fname = fname.replace("**","^")
+    fname = fname.replace("*","\cdot ")
+    
     f   =       lambda x: eval(root[1].text)
     df  =       lambda x: eval(root[2].text)
     d2f =       lambda x: eval(root[3].text)
@@ -191,6 +209,7 @@ def main():
     b =         data[10]  
     
     plt.close('all')
+    mpl.rcParams.update({'font.size': 14})
     Plot_Function(f,fname,a,b)
     
     switch = method
