@@ -20,27 +20,24 @@ R2 = float(root[1].text)
 R3 = float(root[2].text)
 R4 = float(root[3].text)
 R5 = float(root[4].text)
-
+V = float(root[5].text)
 
 #Resistances
 Rvec = np.array([R1, R2, R3, R4, R5])
 
 #Currents
 Ivec = np.array([1,1,1])
-
-#Power 
-P = 0.4
-I = (P*Rvec[4])**0.5
+I = 2*V/(Rvec[0] + Rvec[1] + Rvec[3] + Rvec[4])
 
 #Tolerance
 tol = 1e-14
 
 #Defining the system as F=(f1, f2, f3....) 
-F = lambda Rvec, Ivec: np.array([Ivec[0] + Ivec[1] - I, Ivec[0]*(Rvec[0]-Rvec[3]) - Ivec[2]*Rvec[3] - I*Rvec[4], 
-	Ivec[0]*Rvec[0] + Ivec[1]*Rvec[1] + Ivec[2]*Rvec[2]])
+F = lambda Rvec, Ivec: np.array([Ivec[0] + Ivec[1] - I, Ivec[0]*Rvec[0] - Ivec[1]*Rvec[1] + Ivec[2]*Rvec[2], 
+	Ivec[0]*(Rvec[0] + Rvec[3]) - Ivec[2]*Rvec[3] - V])
 
 #Defining the jacobi matrix of the system
-J = lambda Rvec: np.matrix([[1, 1, 0], [Rvec[0]-Rvec[3], 0, -Rvec[3]], [Rvec[0], Rvec[1], Rvec[2]]])
+J = lambda Rvec: np.matrix([[1, 1, 0], [Rvec[0],  - Rvec[1], Rvec[3]], [Rvec[0] + Rvec[4], 0, -Rvec[3]]])
 
 def Multvariate_Newton(Ivec, Rvec):
 	print('Starting at: ', Ivec)
