@@ -6,7 +6,7 @@
   <Derivative_2>2*exp(-x**2)*(2*x**4-5*x**2+1)</Derivative_2>
   <Derivative_3>-4*exp(-x**2)*x*(2*x**4-9*x**2+6)</Derivative_3>
   <Derivative_4>4*exp(-x**2)*(4*x**6-28*x**4+39*x**2-6)</Derivative_4>
-  <Convergence>1e-14</Convergence>
+  <Convergence>True</Convergence>
   <Guess>0.4</Guess>
   <xlim_1>-1</xlim_1>
   <xlim_2>1</xlim_2>
